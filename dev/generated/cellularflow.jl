@@ -26,8 +26,8 @@ uvel(x, y) =  ψ₀ * mx * cos(mx * x) * sin(my * y)
 vvel(x, y) = -ψ₀ * my * sin(mx * x) * cos(my * y)
 nothing # hide
 
-prob = TracerAdvectionDiffusion.Problem(; nx=n, Lx=L, kap=κ, steadyflow=true, u=uvel, v=vvel,
-                                          dt=dt, stepper=stepper, dev=dev)
+prob = TracerAdvectionDiffusion.Problem(dev; nx=n, Lx=L, κ=κ, steadyflow=true, u=uvel, v=vvel,
+                                          dt=dt, stepper=stepper)
 nothing # hide
 
 sol, clock, vars, params, grid = prob.sol, prob.clock, prob.vars, prob.params, prob.grid
