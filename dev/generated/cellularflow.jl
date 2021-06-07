@@ -15,15 +15,14 @@ L = 2π        # domain size
 nothing # hide
 
 grid = TwoDGrid(n, L)
-x, y = gridpoints(grid)
 
 ψ₀ = 0.2
 mx, my = 1, 1
 
-ψ = @. ψ₀ * cos(mx * x) * cos(my * y)
+ψ = @. ψ₀ * cos(mx * grid.x) * cos(my * grid.y)
 
-uvel(x, y) =  ψ₀ * mx * cos(mx * x) * sin(my * y)
-vvel(x, y) = -ψ₀ * my * sin(mx * x) * cos(my * y)
+uvel(x, y) =  ψ₀ * my * cos(mx * x) * sin(my * y)
+vvel(x, y) = -ψ₀ * mx * sin(mx * x) * cos(my * y)
 nothing # hide
 
 prob = TracerAdvectionDiffusion.Problem(dev; nx=n, Lx=L, κ=κ, steadyflow=true, u=uvel, v=vvel,
