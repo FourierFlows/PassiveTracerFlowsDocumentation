@@ -90,7 +90,7 @@ anim = @animate for j = 0:round(Int, nsteps/nsubs)
   TracerAdvectionDiffusion.updatevars!(prob)
 end
 
-mp4(anim, "cellularflow.mp4", fps=12)
+mp4(anim, "cellularflow_advection-diffusion.mp4", fps=12)
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
 
