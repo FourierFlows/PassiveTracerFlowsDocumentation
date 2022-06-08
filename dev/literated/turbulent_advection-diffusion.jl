@@ -7,6 +7,7 @@ nothing # hide
       n = 128            # 2D resolution = n²
 stepper = "FilteredRK4"  # timestepper
      dt = 2.5e-3         # timestep
+nothing # hide
 
 L = 2π                   # domain size
 μ = 5e-2                 # bottom drag
@@ -20,6 +21,7 @@ f₀, g = 1, 1             # Coriolis parameter and gravitational constant
  U = zeros(nlayers) # the imposed mean zonal flow in each layer
  U[1] = 1.0
  U[2] = 0.0
+nothing # hide
 
 MQGprob = MultiLayerQG.Problem(nlayers, dev;
                                nx=n, Lx=L, f₀, g, H, ρ, U, μ, β,
@@ -33,7 +35,7 @@ q₀h = MQGprob.timestepper.filter .* rfft(q₀, (1, 2)) # apply rfft  only in d
 q₀  = irfft(q₀h, grid.nx, (1, 2))                    # apply irfft only in dims=1, 2
 
 MultiLayerQG.set_q!(MQGprob, q₀)
-nothing
+nothing # hide
 
 κ = 0.002                        # Constant diffusivity
 nsteps = 4000                    # total number of time-steps
@@ -74,7 +76,7 @@ output = Output(ADprob, "advection-diffusion.jld2",
 
 saveproblem(output)
 
-save_frequency = 50 # Frequency at which output is saved
+save_frequency = 50 # frequency at which output is saved
 
 startwalltime = time()
 while clock.step <= nsteps
@@ -100,6 +102,7 @@ layer = 2
 
 c = [file["snapshots/concentration/$i"][:, :, layer] for i ∈ iterations]
 ψ = [file["snapshots/streamfunction/$i"][:, :, layer] for i ∈ iterations]
+nothing # hide
 
 for i in 1:length(ψ)
   ψ[i] *= (amplitude / 5) / maximum(abs, ψ[i])
