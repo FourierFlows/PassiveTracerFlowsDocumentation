@@ -23,10 +23,10 @@ mx, my = 1, 1
 
 uvel(x, y) =  ψ₀ * my * cos(mx * x) * sin(my * y)
 vvel(x, y) = -ψ₀ * mx * sin(mx * x) * cos(my * y)
+advecting_flow = TwoDAdvectingFlow(; u = uvel, v = vvel, steadyflow = true)
 nothing # hide
 
-prob = TracerAdvectionDiffusion.Problem(dev; nx=n, Lx=L, κ=κ, steadyflow=true, u=uvel, v=vvel,
-                                          dt=dt, stepper=stepper)
+prob = TracerAdvectionDiffusion.Problem(dev, advecting_flow; nx=n, Lx=L, κ, dt, stepper)
 nothing # hide
 
 sol, clock, vars, params, grid = prob.sol, prob.clock, prob.vars, prob.params, prob.grid
