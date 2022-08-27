@@ -1,4 +1,4 @@
-using PassiveTracerFlows, Plots, Printf
+using PassiveTracerFlows, CairoMakie, Printf
 
 dev = CPU()     # Device (CPU/GPU)
 nothing # hide
@@ -41,56 +41,47 @@ c₀ = [amplitude * gaussian(x[i] - 0.2 * grid.Lx, y[j], spread) for i=1:grid.nx
 TracerAdvectionDiffusion.set_c!(prob, c₀)
 nothing # hide
 
-function plot_output(prob)
-  c = prob.vars.c
+c_anim = Observable(vars.c)
+title = Observable(@sprintf("concentration, t = %.2f", clock.t))
 
-  p = heatmap(x, y, Array(vars.c'),
-         aspectratio = 1,
-              c = :balance,
-         legend = :false,
-           clim = (-0.2, 0.2),
-          xlims = (-grid.Lx/2, grid.Lx/2),
-          ylims = (-grid.Ly/2, grid.Ly/2),
-         xticks = -3:3,
-         yticks = -3:3,
-         xlabel = "x",
-         ylabel = "y",
-          title = "initial tracer concentration (shading) + streamlines",
-     framestyle = :box)
+Lx, Ly = grid.Lx, grid.Ly
 
-  contour!(p, x, y, Array(ψ'),
-     levels=0.0125:0.025:0.2,
-     lw=2, c=:black, ls=:solid, alpha=0.7)
+fig = Figure(resolution = (600, 600))
 
-  contour!(p, x, y, Array(ψ'),
-     levels=-0.1875:0.025:-0.0125,
-     lw=2, c=:black, ls=:dash, alpha=0.7)
+ax = Axis(fig[1, 1],
+          xlabel = "x",
+          ylabel = "y",
+          aspect = 1,
+          title = title,
+          limits = ((-Lx/2, Lx/2), (-Ly/2, Ly/2)))
 
-  return p
-end
-nothing # hide
+hm = heatmap!(ax, x, y, c_anim;
+              colormap = :balance, colorrange = (-0.2, 0.2))
+
+contour!(ax, x, y, ψ;
+         levels =  0.0125:0.025:0.2, color = :grey, linestyle = :solid)
+contour!(ax, x, y, ψ;
+         levels = -0.1875:0.025:-0.0125, color = (:grey, 0.8), linestyle = :dash)
+
+fig
 
 startwalltime = time()
 
-p = plot_output(prob)
+frames = 0:round(Int, nsteps/nsubs)
+record(fig, "cellularflow_advection-diffusion.mp4", frames, framerate = 12) do j
+   if j % (200 / nsubs) == 0
+      log = @sprintf("step: %04d, t: %d, walltime: %.2f min",
+                     clock.step, clock.t, (time()-startwalltime)/60)
 
-anim = @animate for j = 0:round(Int, nsteps/nsubs)
+      println(log)
+    end
 
- if j % (200 / nsubs) == 0
-    log = @sprintf("step: %04d, t: %d, walltime: %.2f min",
-                   clock.step, clock.t, (time()-startwalltime)/60)
-
-    println(log)
-  end
-
-  p[1][1][:z] = Array(vars.c)
-  p[1][:title] = "concentration, t=" * @sprintf("%.2f", clock.t)
+  c_anim[] = Array(vars.c)
+  title[] = @sprintf("concentration, t = %.2f", clock.t)
 
   stepforward!(prob, nsubs)
   TracerAdvectionDiffusion.updatevars!(prob)
 end
-
-mp4(anim, "cellularflow_advection-diffusion.mp4", fps=12)
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
 
