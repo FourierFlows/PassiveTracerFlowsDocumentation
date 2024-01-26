@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Advection-diffusion of tracer by a turbulent flow · PassiveTracerFlows.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="https://fourierflows.github.io/PassiveTracerFlowsDocumentation/stable/literated/turbulent_advection-diffusion/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">PassiveTracerFlows.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li><input class="collapse-toggle" id="menuitem-2-1" type="checkbox" checked/><label class="tocitem" for="menuitem-2-1"><span class="docs-label">TracerAdvectionDiffusion</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../onedim_gaussiandiffusion/">Advection-diffusion of tracer in one dimension</a></li><li><a class="tocitem" href="../cellularflow/">Advection-diffusion of tracer by cellular flow</a></li><li class="is-active"><a class="tocitem" href>Advection-diffusion of tracer by a turbulent flow</a><ul class="internal"><li><a class="tocitem" href="#Install-dependencies"><span>Install dependencies</span></a></li><li><a class="tocitem" href="#Let&#39;s-begin"><span>Let&#39;s begin</span></a></li><li><a class="tocitem" href="#Choosing-a-device:-CPU-or-GPU"><span>Choosing a device: CPU or GPU</span></a></li><li><a class="tocitem" href="#Setting-up-a-MultiLayerQG.Problem-to-generate-a-turbulent-flow"><span>Setting up a <code>MultiLayerQG.Problem</code> to generate a turbulent flow</span></a></li><li><a class="tocitem" href="#Tracer-advection-diffusion-setup"><span>Tracer advection-diffusion setup</span></a></li><li><a class="tocitem" href="#Initial-condition-for-concentration-in-both-layers"><span>Initial condition for concentration in both layers</span></a></li><li><a class="tocitem" href="#Saving-output"><span>Saving output</span></a></li><li><a class="tocitem" href="#Step-the-problem-forward-and-save-the-output"><span>Step the problem forward and save the output</span></a></li><li><a class="tocitem" href="#Visualizing-the-output"><span>Visualizing the output</span></a></li></ul></li></ul></li></ul></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../../modules/traceradvectiondiffusion/">TracerAdvectionDiffusion Module</a></li></ul></li><li><span class="tocitem">DocStrings</span><ul><li><a class="tocitem" href="../../man/types/">Private types</a></li><li><a class="tocitem" href="../../man/functions/">Functions</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li><a class="is-disabled">TracerAdvectionDiffusion</a></li><li class="is-active"><a href>Advection-diffusion of tracer by a turbulent flow</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Advection-diffusion of tracer by a turbulent flow</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/FourierFlows/PassiveTracerFlowsDocumentation/blob/main/examples/turbulent_advection-diffusion.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Advection-diffusion-of-tracer-by-a-turbulent-flow"><a class="docs-heading-anchor" href="#Advection-diffusion-of-tracer-by-a-turbulent-flow">Advection-diffusion of tracer by a turbulent flow</a><a id="Advection-diffusion-of-tracer-by-a-turbulent-flow-1"></a><a class="docs-heading-anchor-permalink" href="#Advection-diffusion-of-tracer-by-a-turbulent-flow" title="Permalink"></a></h1><p>This is an example demonstrating the advection-diffusion of a tracer using a turbulent flow generated by the <code>GeophysicalFlows.jl</code> package.</p><h2 id="Install-dependencies"><a class="docs-heading-anchor" href="#Install-dependencies">Install dependencies</a><a id="Install-dependencies-1"></a><a class="docs-heading-anchor-permalink" href="#Install-dependencies" title="Permalink"></a></h2><p>First let&#39;s make sure we have all the required packages installed.</p><pre><code class="language-julia hljs">using Pkg
+pkg.add([&quot;PassiveTracerFlows&quot;, &quot;CairoMakie&quot;, &quot;JLD2&quot;])</code></pre><h2 id="Let&#39;s-begin"><a class="docs-heading-anchor" href="#Let&#39;s-begin">Let&#39;s begin</a><a id="Let&#39;s-begin-1"></a><a class="docs-heading-anchor-permalink" href="#Let&#39;s-begin" title="Permalink"></a></h2><p>First load packages needed to run this example.</p><pre><code class="language-julia hljs">using PassiveTracerFlows, Printf, CairoMakie, JLD2
+using Random: seed!</code></pre><h2 id="Choosing-a-device:-CPU-or-GPU"><a class="docs-heading-anchor" href="#Choosing-a-device:-CPU-or-GPU">Choosing a device: CPU or GPU</a><a id="Choosing-a-device:-CPU-or-GPU-1"></a><a class="docs-heading-anchor-permalink" href="#Choosing-a-device:-CPU-or-GPU" title="Permalink"></a></h2><pre><code class="language-julia hljs">dev = CPU()</code></pre><h2 id="Setting-up-a-MultiLayerQG.Problem-to-generate-a-turbulent-flow"><a class="docs-heading-anchor" href="#Setting-up-a-MultiLayerQG.Problem-to-generate-a-turbulent-flow">Setting up a <code>MultiLayerQG.Problem</code> to generate a turbulent flow</a><a id="Setting-up-a-MultiLayerQG.Problem-to-generate-a-turbulent-flow-1"></a><a class="docs-heading-anchor-permalink" href="#Setting-up-a-MultiLayerQG.Problem-to-generate-a-turbulent-flow" title="Permalink"></a></h2><p>The tubulent flow we use to advect the passive tracer is generated using the <a href="https://fourierflows.github.io/GeophysicalFlowsDocumentation/stable/modules/multilayerqg/"><code>MultiLayerQG</code></a> module from the <a href="https://fourierflows.github.io/GeophysicalFlowsDocumentation/stable/"><code>GeophysicalFlows.jl</code></a> package. A more detailed setup of this two layer system is found at the <a href="https://fourierflows.github.io/GeophysicalFlowsDocumentation/stable/literated/multilayerqg_2layer/">GeophysicalFlows Documentation</a>.</p><h3 id="Numerical-and-time-stepping-parameters-for-the-flow"><a class="docs-heading-anchor" href="#Numerical-and-time-stepping-parameters-for-the-flow">Numerical and time stepping parameters for the flow</a><a id="Numerical-and-time-stepping-parameters-for-the-flow-1"></a><a class="docs-heading-anchor-permalink" href="#Numerical-and-time-stepping-parameters-for-the-flow" title="Permalink"></a></h3><pre><code class="language-julia hljs">      n = 128            # 2D resolution = n²
+stepper = &quot;FilteredRK4&quot;  # timestepper
+     dt = 2.5e-3         # timestep</code></pre><h3 id="Physical-parameters"><a class="docs-heading-anchor" href="#Physical-parameters">Physical parameters</a><a id="Physical-parameters-1"></a><a class="docs-heading-anchor-permalink" href="#Physical-parameters" title="Permalink"></a></h3><pre><code class="language-julia hljs">L = 2π                   # domain size
+μ = 5e-2                 # bottom drag
+β = 5                    # the y-gradient of planetary PV
+
+nlayers = 2              # number of layers
+f₀, g = 1, 1             # Coriolis parameter and gravitational constant
+H = [0.2, 0.8]           # the rest depths of each layer
+ρ = [4.0, 5.0]           # the density of each layer
+
+ U = zeros(nlayers)      # the imposed mean zonal flow in each layer
+ U[1] = 1.0
+ U[2] = 0.0</code></pre><h3 id="MultiLayerQG.Problem-setup,-shortcuts-and-initial-conditions"><a class="docs-heading-anchor" href="#MultiLayerQG.Problem-setup,-shortcuts-and-initial-conditions"><code>MultiLayerQG.Problem</code> setup, shortcuts and initial conditions</a><a id="MultiLayerQG.Problem-setup,-shortcuts-and-initial-conditions-1"></a><a class="docs-heading-anchor-permalink" href="#MultiLayerQG.Problem-setup,-shortcuts-and-initial-conditions" title="Permalink"></a></h3><pre><code class="language-julia hljs">MQGprob = MultiLayerQG.Problem(nlayers, dev;
+                               nx=n, Lx=L, f₀, g, H, ρ, U, μ, β,
+                               dt, stepper, aliased_fraction=0)
+
+nx, ny = MQGprob.grid.nx, MQGprob.grid.ny</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(128, 128)</code></pre><p>Initial conditions</p><pre><code class="language-julia hljs">seed!(1234) # reset of the random number generator for reproducibility
+q₀  = 1e-2 * device_array(dev)(randn((nx, ny, nlayers)))
+q₀h = MQGprob.timestepper.filter .* rfft(q₀, (1, 2)) # apply rfft  only in dims=1, 2
+q₀  = irfft(q₀h, nx, (1, 2))                         # apply irfft only in dims=1, 2
+
+MultiLayerQG.set_q!(MQGprob, q₀)</code></pre><h2 id="Tracer-advection-diffusion-setup"><a class="docs-heading-anchor" href="#Tracer-advection-diffusion-setup">Tracer advection-diffusion setup</a><a id="Tracer-advection-diffusion-setup-1"></a><a class="docs-heading-anchor-permalink" href="#Tracer-advection-diffusion-setup" title="Permalink"></a></h2><p>Now that we have a <code>MultiLayerQG.Problem</code> setup to generate our turbulent flow, we setup an advection-diffusion simulation. This is done by passing the <code>MultiLayerQG.Problem</code> as an argument to <code>TracerAdvectionDiffusion.Problem</code> which sets up an advection-diffusion problem with same parameters where applicable and also on the same device (CPU/GPU). We also need to pass a value for the constant diffusivity <code>κ</code>, the <code>stepper</code> used to step the problem forward and when we want the tracer released into the flow. We let the flow evolve up to <code>t = tracer_release_time</code> and then release the tracer and let it evolve with the flow.</p><pre><code class="language-julia hljs">κ = 0.002                        # constant diffusivity
+nsteps = 4000                    # total number of time-steps
+tracer_release_time = 25.0       # run flow for some time before releasing tracer
+
+ADprob = TracerAdvectionDiffusion.Problem(MQGprob; κ, stepper, tracer_release_time)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Problem
+  ├─────────── grid: grid (on CPU)
+  ├───── parameters: params
+  ├────── variables: vars
+  ├─── state vector: sol
+  ├─────── equation: eqn
+  ├────────── clock: clock
+  └──── timestepper: FilteredRK4TimeStepper</code></pre><p>Some shortcuts for the advection-diffusion problem:</p><pre><code class="language-julia hljs">sol, clock, vars, params, grid = ADprob.sol, ADprob.clock, ADprob.vars, ADprob.params, ADprob.grid
+x, y = grid.x, grid.y</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(-3.141592653589793:0.04908738521234052:3.0925052683774528, -3.141592653589793:0.04908738521234052:3.0925052683774528)</code></pre><h2 id="Initial-condition-for-concentration-in-both-layers"><a class="docs-heading-anchor" href="#Initial-condition-for-concentration-in-both-layers">Initial condition for concentration in both layers</a><a id="Initial-condition-for-concentration-in-both-layers-1"></a><a class="docs-heading-anchor-permalink" href="#Initial-condition-for-concentration-in-both-layers" title="Permalink"></a></h2><p>We have a two layer system so we advect-diffuse the tracer in both layers. To do this we set the initial condition for tracer concetration as a Gaussian centered at the origin.</p><pre><code class="language-julia hljs">gaussian(x, y, σ) = exp(-(x^2 + y^2) / 2σ^2)
+
+amplitude, spread = 10, 0.15
+c₀ = [amplitude * gaussian(x[i], y[j], spread) for j=1:grid.ny, i=1:grid.nx]
+
+TracerAdvectionDiffusion.set_c!(ADprob, c₀)</code></pre><h2 id="Saving-output"><a class="docs-heading-anchor" href="#Saving-output">Saving output</a><a id="Saving-output-1"></a><a class="docs-heading-anchor-permalink" href="#Saving-output" title="Permalink"></a></h2><p>The parent package <code>FourierFlows.jl</code> provides the functionality to save the output from our simulation. To do this we write a function <code>get_concentration</code> and pass this to the <code>Output</code> constructor along with the <code>TracerAdvectionDiffusion.Problem</code> and the name of the output file.</p><pre><code class="language-julia hljs">function get_concentration(prob)
+  invtransform!(prob.vars.c, deepcopy(prob.sol), prob.params.MQGprob.params)
+
+  return prob.vars.c
+end
+
+function get_streamfunction(prob)
+  params, vars, grid = prob.params.MQGprob.params, prob.params.MQGprob.vars, prob.grid
+
+  @. vars.qh = prob.params.MQGprob.sol
+
+  streamfunctionfrompv!(vars.ψh, vars.qh, params, grid)
+
+  invtransform!(vars.ψ, vars.ψh, params)
+
+  return vars.ψ
+end
+
+output = Output(ADprob, &quot;advection-diffusion.jld2&quot;,
+                (:concentration, get_concentration), (:streamfunction, get_streamfunction))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Output
+  ├──── prob: FourierFlows.Problem{DataType, Array{ComplexF64, 3}, Float64, Array{Float64, 3}}
+  ├──── path: advection-diffusion_1.jld2
+  └── fields: Dict{Symbol, Function}(:streamfunction =&gt; Main.get_streamfunction, :concentration =&gt; Main.get_concentration)</code></pre><p>This saves information that we will use for plotting later on.</p><pre><code class="language-julia hljs">saveproblem(output)</code></pre><h2 id="Step-the-problem-forward-and-save-the-output"><a class="docs-heading-anchor" href="#Step-the-problem-forward-and-save-the-output">Step the problem forward and save the output</a><a id="Step-the-problem-forward-and-save-the-output-1"></a><a class="docs-heading-anchor-permalink" href="#Step-the-problem-forward-and-save-the-output" title="Permalink"></a></h2><p>We specify that we would like to save the concentration every <code>save_frequency</code> timesteps; then we step the problem forward.</p><pre><code class="language-julia hljs">save_frequency = 50 # frequency at which output is saved
+
+startwalltime = time()
+while clock.step &lt;= nsteps
+  if clock.step % save_frequency == 0
+    saveoutput(output)
+    log = @sprintf(&quot;Output saved, step: %04d, t: %.2f, walltime: %.2f min&quot;,
+                   clock.step, clock.t, (time()-startwalltime) / 60)
+
+    println(log)
+  end
+
+  stepforward!(ADprob)
+  stepforward!(params.MQGprob)
+  MultiLayerQG.updatevars!(params.MQGprob)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Output saved, step: 0000, t: 0.00, walltime: 0.00 min
+Output saved, step: 0050, t: 0.13, walltime: 0.01 min
+Output saved, step: 0100, t: 0.25, walltime: 0.02 min
+Output saved, step: 0150, t: 0.38, walltime: 0.03 min
+Output saved, step: 0200, t: 0.50, walltime: 0.04 min
+Output saved, step: 0250, t: 0.62, walltime: 0.04 min
+Output saved, step: 0300, t: 0.75, walltime: 0.05 min
+Output saved, step: 0350, t: 0.87, walltime: 0.06 min
+Output saved, step: 0400, t: 1.00, walltime: 0.07 min
+Output saved, step: 0450, t: 1.12, walltime: 0.08 min
+Output saved, step: 0500, t: 1.25, walltime: 0.09 min
+Output saved, step: 0550, t: 1.37, walltime: 0.10 min
+Output saved, step: 0600, t: 1.50, walltime: 0.11 min
+Output saved, step: 0650, t: 1.62, walltime: 0.11 min
+Output saved, step: 0700, t: 1.75, walltime: 0.12 min
+Output saved, step: 0750, t: 1.87, walltime: 0.13 min
+Output saved, step: 0800, t: 2.00, walltime: 0.14 min
+Output saved, step: 0850, t: 2.12, walltime: 0.15 min
+Output saved, step: 0900, t: 2.25, walltime: 0.16 min
+Output saved, step: 0950, t: 2.37, walltime: 0.17 min
+Output saved, step: 1000, t: 2.50, walltime: 0.18 min
+Output saved, step: 1050, t: 2.62, walltime: 0.19 min
+Output saved, step: 1100, t: 2.75, walltime: 0.19 min
+Output saved, step: 1150, t: 2.87, walltime: 0.20 min
+Output saved, step: 1200, t: 3.00, walltime: 0.21 min
+Output saved, step: 1250, t: 3.12, walltime: 0.22 min
+Output saved, step: 1300, t: 3.25, walltime: 0.23 min
+Output saved, step: 1350, t: 3.37, walltime: 0.24 min
+Output saved, step: 1400, t: 3.50, walltime: 0.25 min
+Output saved, step: 1450, t: 3.62, walltime: 0.26 min
+Output saved, step: 1500, t: 3.75, walltime: 0.26 min
+Output saved, step: 1550, t: 3.87, walltime: 0.27 min
+Output saved, step: 1600, t: 4.00, walltime: 0.28 min
+Output saved, step: 1650, t: 4.12, walltime: 0.29 min
+Output saved, step: 1700, t: 4.25, walltime: 0.30 min
+Output saved, step: 1750, t: 4.37, walltime: 0.31 min
+Output saved, step: 1800, t: 4.50, walltime: 0.32 min
+Output saved, step: 1850, t: 4.63, walltime: 0.33 min
+Output saved, step: 1900, t: 4.75, walltime: 0.34 min
+Output saved, step: 1950, t: 4.88, walltime: 0.34 min
+Output saved, step: 2000, t: 5.00, walltime: 0.35 min
+Output saved, step: 2050, t: 5.13, walltime: 0.36 min
+Output saved, step: 2100, t: 5.25, walltime: 0.37 min
+Output saved, step: 2150, t: 5.38, walltime: 0.38 min
+Output saved, step: 2200, t: 5.50, walltime: 0.39 min
+Output saved, step: 2250, t: 5.63, walltime: 0.40 min
+Output saved, step: 2300, t: 5.75, walltime: 0.41 min
+Output saved, step: 2350, t: 5.88, walltime: 0.42 min
+Output saved, step: 2400, t: 6.00, walltime: 0.43 min
+Output saved, step: 2450, t: 6.13, walltime: 0.44 min
+Output saved, step: 2500, t: 6.25, walltime: 0.45 min
+Output saved, step: 2550, t: 6.38, walltime: 0.46 min
+Output saved, step: 2600, t: 6.50, walltime: 0.47 min
+Output saved, step: 2650, t: 6.63, walltime: 0.48 min
+Output saved, step: 2700, t: 6.75, walltime: 0.48 min
+Output saved, step: 2750, t: 6.88, walltime: 0.49 min
+Output saved, step: 2800, t: 7.00, walltime: 0.50 min
+Output saved, step: 2850, t: 7.13, walltime: 0.51 min
+Output saved, step: 2900, t: 7.25, walltime: 0.52 min
+Output saved, step: 2950, t: 7.38, walltime: 0.53 min
+Output saved, step: 3000, t: 7.50, walltime: 0.54 min
+Output saved, step: 3050, t: 7.63, walltime: 0.55 min
+Output saved, step: 3100, t: 7.75, walltime: 0.56 min
+Output saved, step: 3150, t: 7.88, walltime: 0.57 min
+Output saved, step: 3200, t: 8.00, walltime: 0.58 min
+Output saved, step: 3250, t: 8.13, walltime: 0.59 min
+Output saved, step: 3300, t: 8.25, walltime: 0.60 min
+Output saved, step: 3350, t: 8.38, walltime: 0.60 min
+Output saved, step: 3400, t: 8.50, walltime: 0.61 min
+Output saved, step: 3450, t: 8.63, walltime: 0.62 min
+Output saved, step: 3500, t: 8.75, walltime: 0.63 min
+Output saved, step: 3550, t: 8.88, walltime: 0.64 min
+Output saved, step: 3600, t: 9.00, walltime: 0.65 min
+Output saved, step: 3650, t: 9.13, walltime: 0.66 min
+Output saved, step: 3700, t: 9.25, walltime: 0.67 min
+Output saved, step: 3750, t: 9.38, walltime: 0.68 min
+Output saved, step: 3800, t: 9.50, walltime: 0.69 min
+Output saved, step: 3850, t: 9.63, walltime: 0.70 min
+Output saved, step: 3900, t: 9.75, walltime: 0.71 min
+Output saved, step: 3950, t: 9.88, walltime: 0.72 min
+Output saved, step: 4000, t: 10.00, walltime: 0.73 min</code></pre><h2 id="Visualizing-the-output"><a class="docs-heading-anchor" href="#Visualizing-the-output">Visualizing the output</a><a id="Visualizing-the-output-1"></a><a class="docs-heading-anchor-permalink" href="#Visualizing-the-output" title="Permalink"></a></h2><p>We now have output from our simulation saved in <code>advection-diffusion.jld2</code>. As a demonstration, we load the JLD2 output and create a time series for the tracer in the lower layer of our fluid along with the flow streamlines.</p><p>Create time series for the concentration and streamfunction in the bottom layer, <code>layer = 2</code>.</p><pre><code class="language-julia hljs">file = jldopen(output.path)
+
+iterations = parse.(Int, keys(file[&quot;snapshots/t&quot;]))
+t = [file[&quot;snapshots/t/$i&quot;] for i ∈ iterations]
+
+layer = 2
+
+c = [file[&quot;snapshots/concentration/$i&quot;][:, :, layer] for i ∈ iterations]
+ψ = [file[&quot;snapshots/streamfunction/$i&quot;][:, :, layer] for i ∈ iterations]</code></pre><p>We normalize all streamfunctions to have maximum absolute value 1.</p><pre><code class="language-julia hljs">for i in 1:lastindex(ψ)
+  ψ[i] /= maximum(abs, ψ[i])
+end
+
+x,  y  = file[&quot;grid/x&quot;],  file[&quot;grid/y&quot;]
+Lx, Ly = file[&quot;grid/Lx&quot;], file[&quot;grid/Ly&quot;]
+
+n = Observable(1)
+
+c_anim = @lift Array(c[$n])
+ψ_anim = @lift Array(ψ[$n])
+title = @lift @sprintf(&quot;concentration, t = %.2f&quot;, t[$n])
+
+fig = Figure(resolution = (600, 600))
+ax = Axis(fig[1, 1],
+          xlabel = &quot;x&quot;,
+          ylabel = &quot;y&quot;,
+          aspect = 1,
+          title = title,
+          limits = ((-Lx/2, Lx/2), (-Ly/2, Ly/2)))
+
+hm = heatmap!(ax, x, y, c_anim;
+              colormap = :balance, colorrange = (-1, 1))
+contour!(ax, x, y, ψ_anim;
+         levels = 0.1:0.2:1, color = :grey, linestyle = :solid)
+contour!(ax, x, y, ψ_anim;
+         levels = -0.1:-0.2:-1, color = (:grey, 0.8), linestyle = :dash)</code></pre><p>Create a movie of the tracer with the streamlines.</p><pre><code class="language-julia hljs">frames = 1:length(t)
+record(fig, &quot;turbulentflow_advection-diffusion.mp4&quot;, frames, framerate = 12) do i
+    n[] = i
+end</code></pre><p><video src="../turbulentflow_advection-diffusion.mp4" controls="true" title><a href="../turbulentflow_advection-diffusion.mp4"></a></video></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../cellularflow/">« Advection-diffusion of tracer by cellular flow</a><a class="docs-footer-nextpage" href="../../modules/traceradvectiondiffusion/">TracerAdvectionDiffusion Module »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Friday 2 September 2022 22:01">Friday 2 September 2022</span>. Using Julia version 1.6.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

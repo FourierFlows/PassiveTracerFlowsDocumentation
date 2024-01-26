@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Advection-diffusion of tracer in one dimension · PassiveTracerFlows.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="https://fourierflows.github.io/PassiveTracerFlowsDocumentation/stable/literated/onedim_gaussiandiffusion/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">PassiveTracerFlows.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Examples</span><ul><li><input class="collapse-toggle" id="menuitem-2-1" type="checkbox" checked/><label class="tocitem" for="menuitem-2-1"><span class="docs-label">TracerAdvectionDiffusion</span><i class="docs-chevron"></i></label><ul class="collapsed"><li class="is-active"><a class="tocitem" href>Advection-diffusion of tracer in one dimension</a><ul class="internal"><li><a class="tocitem" href="#Install-dependencies"><span>Install dependencies</span></a></li><li><a class="tocitem" href="#Let&#39;s-begin"><span>Let&#39;s begin</span></a></li><li><a class="tocitem" href="#Choosing-a-device:-CPU-or-GPU"><span>Choosing a device: CPU or GPU</span></a></li><li><a class="tocitem" href="#Numerical-parameters-and-time-stepping-parameters"><span>Numerical parameters and time-stepping parameters</span></a></li><li><a class="tocitem" href="#Physical-parameters"><span>Physical parameters</span></a></li><li><a class="tocitem" href="#Flow"><span>Flow</span></a></li><li><a class="tocitem" href="#Problem-setup"><span>Problem setup</span></a></li><li><a class="tocitem" href="#Initial-condition"><span>Initial condition</span></a></li><li><a class="tocitem" href="#Saving-output"><span>Saving output</span></a></li><li><a class="tocitem" href="#Stepping-the-problem-forward"><span>Stepping the problem forward</span></a></li><li><a class="tocitem" href="#Visualising-the-output"><span>Visualising the output</span></a></li></ul></li><li><a class="tocitem" href="../cellularflow/">Advection-diffusion of tracer by cellular flow</a></li><li><a class="tocitem" href="../turbulent_advection-diffusion/">Advection-diffusion of tracer by a turbulent flow</a></li></ul></li></ul></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../../modules/traceradvectiondiffusion/">TracerAdvectionDiffusion Module</a></li></ul></li><li><span class="tocitem">DocStrings</span><ul><li><a class="tocitem" href="../../man/types/">Private types</a></li><li><a class="tocitem" href="../../man/functions/">Functions</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li><a class="is-disabled">TracerAdvectionDiffusion</a></li><li class="is-active"><a href>Advection-diffusion of tracer in one dimension</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Advection-diffusion of tracer in one dimension</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/FourierFlows/PassiveTracerFlowsDocumentation/blob/main/examples/onedim_gaussiandiffusion.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Advection-diffusion-of-tracer-in-one-dimension"><a class="docs-heading-anchor" href="#Advection-diffusion-of-tracer-in-one-dimension">Advection-diffusion of tracer in one dimension</a><a id="Advection-diffusion-of-tracer-in-one-dimension-1"></a><a class="docs-heading-anchor-permalink" href="#Advection-diffusion-of-tracer-in-one-dimension" title="Permalink"></a></h1><p>This is an example demonstrating the advection-diffusion of a passive tracer in one dimension.</p><h2 id="Install-dependencies"><a class="docs-heading-anchor" href="#Install-dependencies">Install dependencies</a><a id="Install-dependencies-1"></a><a class="docs-heading-anchor-permalink" href="#Install-dependencies" title="Permalink"></a></h2><p>First let&#39;s make sure we have all the required packages installed</p><pre><code class="language-julia hljs">using Pkg
+pkg.add([&quot;PassiveTracerFlows&quot;, &quot;CairoMakie&quot;, &quot;JLD2&quot;])</code></pre><h2 id="Let&#39;s-begin"><a class="docs-heading-anchor" href="#Let&#39;s-begin">Let&#39;s begin</a><a id="Let&#39;s-begin-1"></a><a class="docs-heading-anchor-permalink" href="#Let&#39;s-begin" title="Permalink"></a></h2><p>First load packages needed to run this example.</p><pre><code class="language-julia hljs">using PassiveTracerFlows, CairoMakie, Printf, JLD2, LinearAlgebra</code></pre><h2 id="Choosing-a-device:-CPU-or-GPU"><a class="docs-heading-anchor" href="#Choosing-a-device:-CPU-or-GPU">Choosing a device: CPU or GPU</a><a id="Choosing-a-device:-CPU-or-GPU-1"></a><a class="docs-heading-anchor-permalink" href="#Choosing-a-device:-CPU-or-GPU" title="Permalink"></a></h2><pre><code class="language-julia hljs">dev = CPU()     # Device (CPU/GPU)</code></pre><h2 id="Numerical-parameters-and-time-stepping-parameters"><a class="docs-heading-anchor" href="#Numerical-parameters-and-time-stepping-parameters">Numerical parameters and time-stepping parameters</a><a id="Numerical-parameters-and-time-stepping-parameters-1"></a><a class="docs-heading-anchor-permalink" href="#Numerical-parameters-and-time-stepping-parameters" title="Permalink"></a></h2><pre><code class="language-julia hljs">      n = 128            # 2D resolution = n²
+stepper = &quot;RK4&quot;          # timestepper
+     dt = 0.02           # timestep
+ nsteps = 5000           # total number of time-steps</code></pre><h2 id="Physical-parameters"><a class="docs-heading-anchor" href="#Physical-parameters">Physical parameters</a><a id="Physical-parameters-1"></a><a class="docs-heading-anchor-permalink" href="#Physical-parameters" title="Permalink"></a></h2><pre><code class="language-julia hljs">L = 2π       # domain size
+κ = 0.01     # diffusivity</code></pre><h2 id="Flow"><a class="docs-heading-anchor" href="#Flow">Flow</a><a id="Flow-1"></a><a class="docs-heading-anchor-permalink" href="#Flow" title="Permalink"></a></h2><p>We set a constant background flow and pass this to <code>OneDAdvectingFlow</code> with <code>steadyflow = true</code> to indicate the flow is not time dependent.</p><pre><code class="language-julia hljs">u(x) = 0.05
+advecting_flow = OneDAdvectingFlow(; u, steadyflow = true)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OneDAdvectingFlow(Main.u, true)</code></pre><h2 id="Problem-setup"><a class="docs-heading-anchor" href="#Problem-setup">Problem setup</a><a id="Problem-setup-1"></a><a class="docs-heading-anchor-permalink" href="#Problem-setup" title="Permalink"></a></h2><p>We initialize a <code>Problem</code> by providing a set of keyword arguments.</p><pre><code class="language-julia hljs">prob = TracerAdvectionDiffusion.Problem(dev, advecting_flow; nx=n, Lx=L, κ, dt, stepper)</code></pre><p>and define some shortcuts.</p><pre><code class="language-julia hljs">sol, clock, vars, params, grid = prob.sol, prob.clock, prob.vars, prob.params, prob.grid
+x = grid.x</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">-3.141592653589793:0.04908738521234052:3.0925052683774528</code></pre><h2 id="Initial-condition"><a class="docs-heading-anchor" href="#Initial-condition">Initial condition</a><a id="Initial-condition-1"></a><a class="docs-heading-anchor-permalink" href="#Initial-condition" title="Permalink"></a></h2><p>We advect-diffuse a concentration field that has an initial concentration set to Gaussian.</p><pre><code class="language-julia hljs">gaussian(x, σ) = exp(-x^2 / 2σ^2)
+
+amplitude, spread = 1, 0.15
+c₀ = [amplitude * gaussian(x[i], spread) for i in 1:grid.nx]
+
+TracerAdvectionDiffusion.set_c!(prob, c₀)</code></pre><h2 id="Saving-output"><a class="docs-heading-anchor" href="#Saving-output">Saving output</a><a id="Saving-output-1"></a><a class="docs-heading-anchor-permalink" href="#Saving-output" title="Permalink"></a></h2><p>We create the saved output using the <code>Output</code> function from <code>FourierFlows.jl</code> then save the concentration field using the <code>get_concentration</code> function every 50 timesteps.</p><pre><code class="language-julia hljs">function get_concentration(prob)
+  ldiv!(prob.vars.c, prob.grid.rfftplan, deepcopy(prob.sol))
+
+  return prob.vars.c
+end
+
+output = Output(prob, &quot;advection-diffusion1D.jld2&quot;,
+                (:concentration, get_concentration))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Output
+  ├──── prob: FourierFlows.Problem{DataType, Vector{ComplexF64}, Float64, Vector{Float64}}
+  ├──── path: advection-diffusion1D_1.jld2
+  └── fields: Dict{Symbol, Function}(:concentration =&gt; Main.get_concentration)</code></pre><p>By calling <code>saveproblem(output)</code> we save information that we will use for plotting later on.</p><pre><code class="language-julia hljs">saveproblem(output)</code></pre><h2 id="Stepping-the-problem-forward"><a class="docs-heading-anchor" href="#Stepping-the-problem-forward">Stepping the problem forward</a><a id="Stepping-the-problem-forward-1"></a><a class="docs-heading-anchor-permalink" href="#Stepping-the-problem-forward" title="Permalink"></a></h2><p>Now we step the problem forward and save output every 50 timesteps.</p><pre><code class="language-julia hljs">save_frequency = 50 # frequency at which output is saved
+
+startwalltime = time()
+while clock.step &lt;= nsteps
+  if clock.step % save_frequency == 0
+    saveoutput(output)
+    log = @sprintf(&quot;Output saved, step: %04d, t: %.2f, walltime: %.2f min&quot;,
+                   clock.step, clock.t, (time()-startwalltime) / 60)
+
+    println(log)
+  end
+
+  stepforward!(prob)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Output saved, step: 0000, t: 0.00, walltime: 0.00 min
+Output saved, step: 0050, t: 1.00, walltime: 0.00 min
+Output saved, step: 0100, t: 2.00, walltime: 0.00 min
+Output saved, step: 0150, t: 3.00, walltime: 0.00 min
+Output saved, step: 0200, t: 4.00, walltime: 0.00 min
+Output saved, step: 0250, t: 5.00, walltime: 0.00 min
+Output saved, step: 0300, t: 6.00, walltime: 0.00 min
+Output saved, step: 0350, t: 7.00, walltime: 0.00 min
+Output saved, step: 0400, t: 8.00, walltime: 0.00 min
+Output saved, step: 0450, t: 9.00, walltime: 0.00 min
+Output saved, step: 0500, t: 10.00, walltime: 0.00 min
+Output saved, step: 0550, t: 11.00, walltime: 0.00 min
+Output saved, step: 0600, t: 12.00, walltime: 0.00 min
+Output saved, step: 0650, t: 13.00, walltime: 0.00 min
+Output saved, step: 0700, t: 14.00, walltime: 0.00 min
+Output saved, step: 0750, t: 15.00, walltime: 0.00 min
+Output saved, step: 0800, t: 16.00, walltime: 0.00 min
+Output saved, step: 0850, t: 17.00, walltime: 0.00 min
+Output saved, step: 0900, t: 18.00, walltime: 0.00 min
+Output saved, step: 0950, t: 19.00, walltime: 0.00 min
+Output saved, step: 1000, t: 20.00, walltime: 0.00 min
+Output saved, step: 1050, t: 21.00, walltime: 0.00 min
+Output saved, step: 1100, t: 22.00, walltime: 0.00 min
+Output saved, step: 1150, t: 23.00, walltime: 0.00 min
+Output saved, step: 1200, t: 24.00, walltime: 0.00 min
+Output saved, step: 1250, t: 25.00, walltime: 0.00 min
+Output saved, step: 1300, t: 26.00, walltime: 0.00 min
+Output saved, step: 1350, t: 27.00, walltime: 0.00 min
+Output saved, step: 1400, t: 28.00, walltime: 0.00 min
+Output saved, step: 1450, t: 29.00, walltime: 0.00 min
+Output saved, step: 1500, t: 30.00, walltime: 0.00 min
+Output saved, step: 1550, t: 31.00, walltime: 0.00 min
+Output saved, step: 1600, t: 32.00, walltime: 0.00 min
+Output saved, step: 1650, t: 33.00, walltime: 0.00 min
+Output saved, step: 1700, t: 34.00, walltime: 0.00 min
+Output saved, step: 1750, t: 35.00, walltime: 0.00 min
+Output saved, step: 1800, t: 36.00, walltime: 0.00 min
+Output saved, step: 1850, t: 37.00, walltime: 0.00 min
+Output saved, step: 1900, t: 38.00, walltime: 0.00 min
+Output saved, step: 1950, t: 39.00, walltime: 0.00 min
+Output saved, step: 2000, t: 40.00, walltime: 0.00 min
+Output saved, step: 2050, t: 41.00, walltime: 0.00 min
+Output saved, step: 2100, t: 42.00, walltime: 0.00 min
+Output saved, step: 2150, t: 43.00, walltime: 0.00 min
+Output saved, step: 2200, t: 44.00, walltime: 0.00 min
+Output saved, step: 2250, t: 45.00, walltime: 0.00 min
+Output saved, step: 2300, t: 46.00, walltime: 0.00 min
+Output saved, step: 2350, t: 47.00, walltime: 0.00 min
+Output saved, step: 2400, t: 48.00, walltime: 0.00 min
+Output saved, step: 2450, t: 49.00, walltime: 0.00 min
+Output saved, step: 2500, t: 50.00, walltime: 0.00 min
+Output saved, step: 2550, t: 51.00, walltime: 0.00 min
+Output saved, step: 2600, t: 52.00, walltime: 0.00 min
+Output saved, step: 2650, t: 53.00, walltime: 0.00 min
+Output saved, step: 2700, t: 54.00, walltime: 0.00 min
+Output saved, step: 2750, t: 55.00, walltime: 0.00 min
+Output saved, step: 2800, t: 56.00, walltime: 0.00 min
+Output saved, step: 2850, t: 57.00, walltime: 0.00 min
+Output saved, step: 2900, t: 58.00, walltime: 0.00 min
+Output saved, step: 2950, t: 59.00, walltime: 0.00 min
+Output saved, step: 3000, t: 60.00, walltime: 0.00 min
+Output saved, step: 3050, t: 61.00, walltime: 0.00 min
+Output saved, step: 3100, t: 62.00, walltime: 0.00 min
+Output saved, step: 3150, t: 63.00, walltime: 0.00 min
+Output saved, step: 3200, t: 64.00, walltime: 0.00 min
+Output saved, step: 3250, t: 65.00, walltime: 0.00 min
+Output saved, step: 3300, t: 66.00, walltime: 0.00 min
+Output saved, step: 3350, t: 67.00, walltime: 0.00 min
+Output saved, step: 3400, t: 68.00, walltime: 0.00 min
+Output saved, step: 3450, t: 69.00, walltime: 0.00 min
+Output saved, step: 3500, t: 70.00, walltime: 0.00 min
+Output saved, step: 3550, t: 71.00, walltime: 0.00 min
+Output saved, step: 3600, t: 72.00, walltime: 0.00 min
+Output saved, step: 3650, t: 73.00, walltime: 0.00 min
+Output saved, step: 3700, t: 74.00, walltime: 0.00 min
+Output saved, step: 3750, t: 75.00, walltime: 0.00 min
+Output saved, step: 3800, t: 76.00, walltime: 0.00 min
+Output saved, step: 3850, t: 77.00, walltime: 0.00 min
+Output saved, step: 3900, t: 78.00, walltime: 0.00 min
+Output saved, step: 3950, t: 79.00, walltime: 0.00 min
+Output saved, step: 4000, t: 80.00, walltime: 0.00 min
+Output saved, step: 4050, t: 81.00, walltime: 0.00 min
+Output saved, step: 4100, t: 82.00, walltime: 0.00 min
+Output saved, step: 4150, t: 83.00, walltime: 0.00 min
+Output saved, step: 4200, t: 84.00, walltime: 0.00 min
+Output saved, step: 4250, t: 85.00, walltime: 0.00 min
+Output saved, step: 4300, t: 86.00, walltime: 0.00 min
+Output saved, step: 4350, t: 87.00, walltime: 0.00 min
+Output saved, step: 4400, t: 88.00, walltime: 0.00 min
+Output saved, step: 4450, t: 89.00, walltime: 0.00 min
+Output saved, step: 4500, t: 90.00, walltime: 0.00 min
+Output saved, step: 4550, t: 91.00, walltime: 0.00 min
+Output saved, step: 4600, t: 92.00, walltime: 0.00 min
+Output saved, step: 4650, t: 93.00, walltime: 0.00 min
+Output saved, step: 4700, t: 94.00, walltime: 0.00 min
+Output saved, step: 4750, t: 95.00, walltime: 0.00 min
+Output saved, step: 4800, t: 96.00, walltime: 0.00 min
+Output saved, step: 4850, t: 97.00, walltime: 0.00 min
+Output saved, step: 4900, t: 98.00, walltime: 0.00 min
+Output saved, step: 4950, t: 99.00, walltime: 0.00 min
+Output saved, step: 5000, t: 100.00, walltime: 0.00 min</code></pre><h2 id="Visualising-the-output"><a class="docs-heading-anchor" href="#Visualising-the-output">Visualising the output</a><a id="Visualising-the-output-1"></a><a class="docs-heading-anchor-permalink" href="#Visualising-the-output" title="Permalink"></a></h2><p>We load the <code>.jld2</code> file and create a timeseries of the concentration field</p><pre><code class="language-julia hljs">file = jldopen(output.path)
+
+iterations = parse.(Int, keys(file[&quot;snapshots/t&quot;]))
+
+t = [file[&quot;snapshots/t/$i&quot;] for i ∈ iterations]
+c = [file[&quot;snapshots/concentration/$i&quot;] for i ∈ iterations]</code></pre><p>Set up the plotting arguments and look at the initial concentration.</p><pre><code class="language-julia hljs">x, Lx = file[&quot;grid/x&quot;], file[&quot;grid/Lx&quot;]
+
+n = Observable(1)
+c_anim = @lift Array(c[$n])
+title = @lift @sprintf(&quot;concentration, t = %s&quot;, t[$n])
+
+fig = Figure(resolution = (600, 600))
+ax = Axis(fig[1, 1],
+          xlabel = &quot;x&quot;,
+          ylabel = &quot;c&quot;,
+          limits = ((-Lx/2, Lx/2), (0, maximum(c[1]))))
+
+lines!(ax, x, c_anim; linewidth = 4)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Lines{Tuple{Vector{Point{2, Float32}}}}</code></pre><p>Now, we create a movie of the tracer concentration being advected and diffused.</p><pre><code class="language-julia hljs">frames = 1:length(t)
+record(fig, &quot;1D_advection-diffusion.mp4&quot;, frames, framerate = 18) do i
+    n[] = i
+end</code></pre><p><video src="../1D_advection-diffusion.mp4" controls="true" title><a href="../1D_advection-diffusion.mp4"></a></video></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../cellularflow/">Advection-diffusion of tracer by cellular flow »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Friday 2 September 2022 22:01">Friday 2 September 2022</span>. Using Julia version 1.6.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

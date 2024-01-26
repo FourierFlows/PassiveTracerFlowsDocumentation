@@ -67,10 +67,10 @@ nothing # hide
 x, Lx = file["grid/x"], file["grid/Lx"]
 
 n = Observable(1)
-c_anim = @lift c[$n]
+c_anim = @lift Array(c[$n])
 title = @lift @sprintf("concentration, t = %s", t[$n])
 
-fig = Figure(resolution = (600, 600))
+fig = Figure(size = (600, 600))
 ax = Axis(fig[1, 1],
           xlabel = "x",
           ylabel = "c",
@@ -86,4 +86,3 @@ end
 nothing # hide
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-

@@ -14,23 +14,23 @@ L = 2π                   # domain size
 β = 5                    # the y-gradient of planetary PV
 
 nlayers = 2              # number of layers
-f₀, g = 1, 1             # Coriolis parameter and gravitational constant
+f₀ = 1                   # Coriolis parameter
 H = [0.2, 0.8]           # the rest depths of each layer
-ρ = [4.0, 5.0]           # the density of each layer
+b = [-1.0, -1.2]         # Boussinesq buoyancy of each layer
 
- U = zeros(nlayers)      # the imposed mean zonal flow in each layer
- U[1] = 1.0
- U[2] = 0.0
+U = zeros(nlayers)       # the imposed mean zonal flow in each layer
+U[1] = 1.0
+U[2] = 0.0
 nothing # hide
 
 MQGprob = MultiLayerQG.Problem(nlayers, dev;
-                               nx=n, Lx=L, f₀, g, H, ρ, U, μ, β,
+                               nx=n, Lx=L, f₀, H, b, U, μ, β,
                                dt, stepper, aliased_fraction=0)
 
 nx, ny = MQGprob.grid.nx, MQGprob.grid.ny
 
 seed!(1234) # reset of the random number generator for reproducibility
-q₀  = 1e-2 * ArrayType(dev)(randn((nx, ny, nlayers)))
+q₀  = 1e-2 * device_array(dev)(randn((nx, ny, nlayers)))
 q₀h = MQGprob.timestepper.filter .* rfft(q₀, (1, 2)) # apply rfft  only in dims=1, 2
 q₀  = irfft(q₀h, nx, (1, 2))                         # apply irfft only in dims=1, 2
 
@@ -41,7 +41,7 @@ nothing # hide
 nsteps = 4000                    # total number of time-steps
 tracer_release_time = 25.0       # run flow for some time before releasing tracer
 
-ADprob = TracerAdvectionDiffusion.Problem(dev, MQGprob; κ, stepper, tracer_release_time)
+ADprob = TracerAdvectionDiffusion.Problem(MQGprob; κ, stepper, tracer_release_time)
 
 sol, clock, vars, params, grid = ADprob.sol, ADprob.clock, ADprob.vars, ADprob.params, ADprob.grid
 x, y = grid.x, grid.y
@@ -113,11 +113,11 @@ Lx, Ly = file["grid/Lx"], file["grid/Ly"]
 
 n = Observable(1)
 
-c_anim = @lift c[$n]
-ψ_anim = @lift ψ[$n]
+c_anim = @lift Array(c[$n])
+ψ_anim = @lift Array(ψ[$n])
 title = @lift @sprintf("concentration, t = %.2f", t[$n])
 
-fig = Figure(resolution = (600, 600))
+fig = Figure(size = (600, 600))
 ax = Axis(fig[1, 1],
           xlabel = "x",
           ylabel = "y",
@@ -142,4 +142,3 @@ end
 nothing # hide
 
 # This file was generated using Literate.jl, https://github.com/fredrikekre/Literate.jl
-
